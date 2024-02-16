@@ -4,7 +4,7 @@ import select
 import fcntl
 import camera_class
 import threading
-from orientation import *
+from CSRL_orientation import *
 
 # Initialize variables
 filter_pole = 0.01
@@ -123,7 +123,8 @@ def get_jacobian(ur, q):
     g = ur.fkine(q)
     p0e = np.array(g.t)
     R0e = np.array(g.R)
-    pec = np.array([0.123, 0, 0.0175+0.015])
+
+    pec = np.array([0, -0.0325, 0.123])
     p0c = p0e + R0e @ pec
 
     pce = p0e - p0c

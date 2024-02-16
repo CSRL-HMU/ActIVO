@@ -40,7 +40,7 @@ class HandTracker:
         self.ph = pinhole.PinholeCamera(fx, fy, cx, cy, size_x, size_y)
 
         self.hands = mp.solutions.hands.Hands(
-            max_num_hands=1,
+            max_num_hands=2,
             min_detection_confidence=0.1,
             min_tracking_confidence=0.1,
             model_complexity=1
@@ -76,9 +76,9 @@ class HandTracker:
                             self.mp_drawing.draw_landmarks(frame_rgb, hand_landmarks)
 
                         fingertips = [
-                            [int(hand_landmarks.landmark[mp.solutions.hands.HandLandmark.INDEX_FINGER_TIP].x * self.frame_width),
-                             int(hand_landmarks.landmark[mp.solutions.hands.HandLandmark.INDEX_FINGER_TIP].y * self.frame_height),
-                             hand_landmarks.landmark[mp.solutions.hands.HandLandmark.INDEX_FINGER_TIP].z],
+                            [int(hand_landmarks.landmark[mp.solutions.hands.HandLandmark.THUMB_TIP].x * self.frame_width),
+                             int(hand_landmarks.landmark[mp.solutions.hands.HandLandmark.THUMB_TIP].y * self.frame_height),
+                             hand_landmarks.landmark[mp.solutions.hands.HandLandmark.THUMB_TIP].z],
                         ]
 
                         # print('ff= ', fingertips)

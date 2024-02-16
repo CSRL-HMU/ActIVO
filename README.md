@@ -5,8 +5,8 @@ The research project "CARPOS - Coachable Robot for Fruit Picking Operations" is 
 https://carpos.hmu.gr/ 
 
 <p align="center">
-  <img src="./doc/Greece_2.jpg" height="275" />
-  <img src="./doc/elidek_logo.png" height="275" />
+  <img src="./doc/Greece_2.jpg" height="175" />
+  <img src="./doc/elidek_logo.png" height="175" />
 </p>
 
 This package implements an active perception controller for minimizing the uncertainty during visual observations of an action performed by a human hand. 

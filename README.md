@@ -15,8 +15,8 @@ A UR5e robot is considered with a realsense d415 camera attached to its end-effe
 
 
 <p align="center">
-  <img src="./doc/example_ellipses_crop.png" height="275" />
-  <img src="./doc/control_descr.png" height="275" />
+  <img src="./doc/example_ellipses_crop.png" height="375" />
+  <img src="./doc/control_descr.png" height="375" />
 </p>
 
 

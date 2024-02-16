@@ -24,10 +24,10 @@ A UR5e robot is considered with a realsense d415 camera attached to its end-effe
 
 For running the active perception controller:
 
-    ```
-    python3 ActiVO_main.py
+```
+python3 ActiVO_main.py
 
-    ```
+```
 
 For post-processing and skill learning, based on the recorded data:
 

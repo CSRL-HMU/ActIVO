@@ -6,13 +6,15 @@ import matplotlib.pyplot as plt
 import os
 from dmpR3 import *
 
-
+plt.style.use(["default","no-latex"])
 
 dt = 0.002
 
+plotEllipses = True
+
 # load data
-exp_id = 'ellipse'
-# exp_id = 'fruitPicking'
+# exp_id = 'ellipse'
+exp_id = 'fruitPicking'
 
 folderPath = pathlib.Path(__file__).parent.resolve()
 
@@ -59,6 +61,7 @@ pf_1_aligned = np.zeros((3, N_0))
 pc_1_aligned = np.zeros((3, N_0))
 Qc_1_aligned = np.zeros((4, N_0))
 pcf_hat_1_aligned = np.zeros((3, N_0))
+Sigma_1_aligned = np.zeros((3, N_0*3))
 
 j = 0
 t_1_now = t_1[j]/t_1[-1]
@@ -85,6 +88,7 @@ for j in range(N_1):
         pc_1_aligned[:, i] = pc_1[:, j]
         Qc_1_aligned[:, i] = Qc_1[:, j]
         pcf_hat_1_aligned[:, i] = pcf_hat_1[:, j]
+        Sigma_1_aligned[:, i*3:i*3+3] = Sigma_1[:, j*3:j*3+3]
     ind = index_1[j]
 
 for i in range(ind, N_0):
@@ -92,13 +96,15 @@ for i in range(ind, N_0):
     pc_1_aligned[:, i] = pc_1[:, -1]
     Qc_1_aligned[:, i] = Qc_1[:, -1]
     pcf_hat_1_aligned[:, i] = pcf_hat_1[:, -1]
+    pcf_hat_1_aligned[:, i] = pcf_hat_1[:, -1]
+    Sigma_1_aligned[:, i*3:i*3+3] = Sigma_1[:, -3:]
 
 
 t = t_0/t_0[-1]
 N = len(pcf_hat_0[1, :])
 
 
-Sigma_c = np.diag((0.02, 0.02, 0.5))
+Sigma_c = np.diag((0.001, 0.001, 0.05))
 
 W = np.zeros((6, 6))
 W[0:3, 0:3] = np.linalg.inv(Sigma_c)
@@ -188,14 +194,83 @@ for i in range(N):
 
 
 fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot(pf_0[0, :], pf_0[1, :], pf_0[2, :], label='$\mathbf{p}_{f,0}$')
-ax.plot(pf_1[0, :], pf_1[1, :], pf_1[2, :], label='$\mathbf{p}_{f,1}$')
-ax.plot(pf_hat[0, :], pf_hat[1, :], pf_hat[2, :], label='$\hat{\mathbf{p}}_f$ (ActIVO)')
-ax.plot(p_dmp[0, :], p_dmp[1, :], p_dmp[2, :], label='$\mathbf{p}_{dmp}$ (ActIVO)')
+ax = fig.add_subplot(projection='3d')
+ax.plot(pf_0[0, :], pf_0[1, :], pf_0[2, :], 'b:', label='$\mathbf{p}_{f,0}$', linewidth=1)
+ax.plot(pf_1[0, :], pf_1[1, :], pf_1[2, :], 'r:', label='$\mathbf{p}_{f,1}$', linewidth=1)
+ax.plot(pf_hat[0, :], pf_hat[1, :], pf_hat[2, :], 'g', label='$\hat{\mathbf{p}}_f$ (ActIVO)', linewidth=1)
+ax.plot(p_dmp[0, :], p_dmp[1, :], p_dmp[2, :], 'k', label='$\mathbf{p}_{dmp}$ (ActIVO)', linewidth=1)
+
+if exp_id == 'ellipse':
+    xref, yref, zref = getEllipseCurve(ax=0.05, ay=0.12, c=[0.55, 0, 0.001], startAngle= pi/2, endAngle=2*pi-pi/12)
+    ax.plot(xref, yref, zref, 'k--', label='ref')
+
+
+
+# print(pf_0[:, 1])
+
+if plotEllipses:
+    for i in range(0,N-1,math.floor(N/2)):
+    # for i in [math.floor(N/2)]:
+        S = 0.1*Sigma_0[0:3,3*i:3*i+3]
+        Xel, Yel, Zel = getCovSurface(S, c = pf_0[:, i])
+        ax.plot_surface(Xel, Yel, Zel, facecolor='b', alpha=0.2)
+
+        R = quat2rot(Qc_1_aligned[:,i])
+        S = 0.1 * R @ Sigma_c @ R.T
+        Xel, Yel, Zel = getCovSurface(S, c = pf_1_aligned[:, i])
+        ax.plot_surface(Xel, Yel, Zel, facecolor='g', alpha=0.2)
+
+        S = 0.1*Sigma_1_aligned[0:3,3*i:3*i+3]
+        Xel, Yel, Zel = getCovSurface(S, c = pf_hat[:, i])
+        ax.plot_surface(Xel, Yel, Zel, facecolor='r', alpha=0.2)
+
+ax.set_xlabel('$x$ [m]')
+ax.set_ylabel('$y$ [m]')
+ax.set_zlabel('$z$ [m]')
+
+
 
 plt.axis('equal')
-plt.legend()
-plt.title('Final Signals')
+plt.legend(loc="upper right",  ncol=2, fontsize=7)
+# plt.legend(loc="upper right", ncol=5)
+
+
+fig1, ax = plt.subplots(3)
+for i in range(3):
+    ax[i].set_position([0.21, ((2-i)/3)*0.82+0.15, 0.7, 0.25])
+    ax[i].plot(t, pf_0[i, :], label='$\mathbf{p}_{f,0}$')
+    ax[i].plot(t, pf_1_aligned[i, :], label='$\mathbf{p}_{f,1}$ (aligned)')
+    ax[i].plot(t, pf_hat[i, :], label='$\hat{\mathbf{p}}_{f}$')
+    ax[i].plot(t, p_dmp[i, :], label='$\mathbf{p}_{dmp}$')
+    ax[i].grid()
+    ax[i].set_xlim([0, t[-1]])
+    
+ax[0].set_ylabel('$\mathbf{p}_x(t)$ [m]')
+ax[1].set_ylabel('$\mathbf{p}_y(t)$ [m]')
+ax[2].set_ylabel('$\mathbf{p}_z(t)$ [m]')
+ax[2].set_xlabel('$t$ [sec]')
+
+
+
 plt.show()
+
+data = {'pf_0': pf_0, 
+        'pf_1': pf_1, 
+        'pf_1_aligned': pf_1_aligned, 
+        'pf_hat': pf_hat, 
+        'p_dmp': p_dmp, 
+        'Sigma_0': Sigma_0, 
+        'Sigma_1': Sigma_1, 
+        'Sigma_1_aligned': Sigma_1_aligned, 
+        'pc_0': pc_0,
+        'Qc_0': Qc_0,
+        'pc_1': pc_1,
+        'Qc_1': Qc_1,
+        'pc_1_aligned': pc_1_aligned,
+        'Qc_1_aligned': Qc_1_aligned,
+        't': t, 
+        'N_0':N_0, 
+        'N_1':N_1, 
+        'N':N }
+scipy.io.savemat('CompleteData_' + exp_id +'.mat', data)
                       

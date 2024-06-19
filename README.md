@@ -1,5 +1,11 @@
 # ActIVO: An Active perception framework for skill transfer through Iterative Visual Observations 
 
+
+Youc can find more details and cite the work via: 
+
+"ActIVO: An Active perception framework for skill transfer through Iterative Visual Observations", Dimitrios Papageorgiou, Nikolaos Kounalakis, Nikolaos Efstathopoulos, John Fasoulas, Michael Sfakiotakis, at the 32nd Mediterranean Conference on Control and Automation (MED 2024), Chania, Greece.
+
+
 The research project "CARPOS - Coachable Robot for Fruit Picking Operations" is implemented in the framework of H.F.R.I call "Basic Research Financing (Horizontal support of all Sciences)" under the National Recovery and Resilience Plan "Greece 2.0" funded by the European Union – NextGenerationEU(H.F.R.I. Project Number: 16523).
 
 https://carpos.hmu.gr/ 
